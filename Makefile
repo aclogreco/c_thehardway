@@ -24,5 +24,8 @@ ex7: ex7.c
 ex8: ex8.c
 	$(CC) $(CFLAGS) ex8.c -o ex8
 
+ex9: ex9.c
+	$(CC) $(CFLAGS) ex9.c -o ex9
+
 clean:
-	rm -f ex1 ex3 ex4 ex5 ex6 ex7 ex8
+	rm -f ex1 ex3 ex4 ex5 ex6 ex7 ex8 ex9
