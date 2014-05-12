@@ -3,6 +3,7 @@
 int main(int argc, char *argv[]) {
   int numbers[4] = {0};
   char name[4] = {'a'};
+  //char *name = "a";
   
   // first, print them out raw
   printf("numbers: %d %d %d %d\n",
@@ -26,6 +27,7 @@ int main(int argc, char *argv[]) {
   name[1] = 'e';
   name[2] = 'd';
   name[3] = '\0';
+  //name = "Zed";
   
   // then print them out initialized
   printf("numbers: %d %d %d %d\n",
@@ -49,7 +51,7 @@ int main(int argc, char *argv[]) {
 	 another[4], another[5], another[6], another[7]);
   
   // name as int
-  int *name_as_int = name;
+  int *name_as_int = (int*)name;
   printf("name as int: %x\n", *name_as_int);
   
   return 0;
