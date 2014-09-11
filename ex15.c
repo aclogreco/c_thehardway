@@ -52,5 +52,15 @@ int main(int argc, char *argv[]) {
 	   *cur_name, *cur_age);
   }
   
+  printf("---\n");
+  
+  // Print the memory addreses of where the names and ages are stored.
+  cur_age = ages;
+  cur_name = names;
+  for (i = 0; i < count; i++) {
+    printf("Name: '%s' is stored at %p\tAge: '%d' is stored at %p\n",
+	   *(cur_name+i), cur_name+i, *(cur_age+i), cur_age+i);
+  }
+  
   return 0;
 }
