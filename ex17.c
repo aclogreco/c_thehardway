@@ -120,14 +120,14 @@ void Database_set(struct Connection *conn, int id,
   }
   
   addr->set = 1;
-  // WARNING: bug, read the "How to break it" and fix this
   char *res = strncpy(addr->name, name, MAX_DATA);
-  // demonstrate the strncpy bug
+  addr->name[MAX_DATA-1] = '\0';
   if (!res) {
     die("Name copy failed");
   }
   
   res = strncpy(addr->email, email, MAX_DATA);
+  addr->email[MAX_DATA-1] = '\0';
   if (!res) {
     die("Email copy failed");
   }
@@ -175,6 +175,9 @@ int main(int argc, char *argv[]) {
   if (argc > 3) {
     id = atoi(argv[3]);
   }
+  if (id < 0) {
+    die("ID needs to be a positive number.");
+  }
   if (id >= MAX_ROWS) {
     die("There's not that many records.");
   }
@@ -186,20 +189,32 @@ int main(int argc, char *argv[]) {
     break;
     
   case 'g':
-    if (argc != 4) die("Need an id to get");
+    if (argc != 4) {
+      die("Need an id to get");
+    }
     
     Database_get(conn, id);
     break;
     
   case 's':
-    if (argc != 6) die("Need id, name, email to set");
+    if (argc != 6) {
+      die("Need id, name, email to set");
+    }
+    if (strlen(argv[4]) >= (MAX_DATA-1)) {
+      die("Name is too long.");
+    }
+    if (strlen(argv[5]) >= (MAX_DATA-1)) {
+      die("Email is too long.");
+    }
     
     Database_set(conn, id, argv[4], argv[5]);
     Database_write(conn);
     break;
     
   case 'd':
-    if (argc != 4) die("Need id to delete");
+    if (argc != 4) {
+      die("Need id to delete");
+    }
     
     Database_delete(conn, id);
     Database_write(conn);
