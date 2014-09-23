@@ -41,15 +41,21 @@ void Address_print(struct Address *addr) {
 
 void Database_load(struct Connection *conn) {
   int rc = fread(conn->db, sizeof(struct Database), 1, conn->file);
-  if (rc != 1) die("Failed to load database.");
+  if (rc != 1) {
+    die("Failed to load database.");
+  }
 }
 
 struct Connection *Database_open(const char *filename, char mode) {
   struct Connection *conn = malloc(sizeof(struct Connection));
-  if (!conn) die("Memory error");
+  if (!conn) {
+    die("Memory error");
+  }
   
   conn->db = malloc(sizeof(struct Database));
-  if (!conn->db) die("Memory error");
+  if (!conn->db) {
+    die("Memory error");
+  }
   
   if (mode == 'c') {
     conn->file = fopen(filename, "w");
@@ -62,15 +68,21 @@ struct Connection *Database_open(const char *filename, char mode) {
     }
   }
   
-  if (!conn->file) die("Failed to open the file");
+  if (!conn->file) {
+    die("Failed to open the file");
+  }
   
   return conn;
 }
 
 void Database_close(struct Connection *conn) {
   if (conn) {
-    if (conn->file) fclose(conn->file);
-    if (conn->db) free(conn->db);
+    if (conn->file) {
+      fclose(conn->file);
+    }
+    if (conn->db) {
+      free(conn->db);
+    }
     free(conn);
   }
 }
@@ -79,10 +91,14 @@ void Database_write(struct Connection *conn) {
   rewind(conn->file);
   
   int rc = fwrite(conn->db, sizeof(struct Database), 1, conn->file);
-  if (rc != 1) die("Failed to write database.");
+  if (rc != 1) {
+    die("Failed to write database.");
+  }
   
   rc = fflush(conn->file);
-  if (rc == -1) die("Can not flush database.");
+  if (rc == -1) {
+    die("Can not flush database.");
+  }
 }
 
 void Database_create(struct Connection *conn) {
@@ -99,16 +115,22 @@ void Database_create(struct Connection *conn) {
 void Database_set(struct Connection *conn, int id, 
 		  const char *name, const char *email) {
   struct Address *addr = &conn->db->rows[id];
-  if (addr->set) die("Already set, delete it first");
+  if (addr->set) {
+    die("Already set, delete it first");
+  }
   
   addr->set = 1;
   // WARNING: bug, read the "How to break it" and fix this
   char *res = strncpy(addr->name, name, MAX_DATA);
   // demonstrate the strncpy bug
-  if (!res) die("Name copy failed");
+  if (!res) {
+    die("Name copy failed");
+  }
   
   res = strncpy(addr->email, email, MAX_DATA);
-  if (!res) die("Email copy failed");
+  if (!res) {
+    die("Email copy failed");
+  }
 }
 
 void Database_get(struct Connection *conn, int id) {
@@ -141,15 +163,21 @@ void Database_list(struct Connection *conn) {
 }
 
 int main(int argc, char *argv[]) {
-  if (argc < 3) die("USAGE: ex17 <dbfile> <action> [action params]");
+  if (argc < 3) {
+    die("USAGE: ex17 <dbfile> <action> [action params]");
+  }
   
   char *filename = argv[1];
   char action = argv[2][0];
   struct Connection *conn = Database_open(filename, action);
   int id = 0;
   
-  if (argc > 3) id = atoi(argv[3]);
-  if (id >= MAX_ROWS) die("There's not that many records.");
+  if (argc > 3) {
+    id = atoi(argv[3]);
+  }
+  if (id >= MAX_ROWS) {
+    die("There's not that many records.");
+  }
   
   switch (action) {
   case 'c':
