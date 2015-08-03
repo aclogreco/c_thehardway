@@ -54,7 +54,7 @@ ex16_b: ex16_b.c
 ex17: ex17.c
 	$(CC) $(CFLAGS) ex17.c -o ex17
 
-ex17: ex17_b.c
+ex17_b: ex17_b.c
 	$(CC) $(CFLAGS) ex17_b.c -o ex17_b
 
 clean:

@@ -225,7 +225,7 @@ int main(int argc, char *argv[]) {
   int num_rows = 0;
   int data_size = 0;
   
-  if (action = 'c') {
+  if (action == 'c') {
     if (argc > 4) {
       num_rows = atoi(argv[3]);
       data_size = atoi(argv[4]);
@@ -258,7 +258,7 @@ int main(int argc, char *argv[]) {
   switch (action) {
   case 'c':
     if (argc != 5) {
-      die("Need to specify the NUMBER OF ROWS and DATA SIZE to create.");
+      die("Need to specify the NUMBER OF ROWS and DATA SIZE to create", conn);
     }
     Database_create(conn);
     conn->db->num_rows = num_rows;
