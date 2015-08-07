@@ -93,6 +93,7 @@ struct Connection *Database_open(const char *filename, char mode) {
     conn->file = fopen(filename, "r+");
     
     if (conn->file) {
+      /* Load the database from the file since it already exists.  */
       Database_load(conn);
     }
   }
@@ -260,9 +261,9 @@ int main(int argc, char *argv[]) {
     if (argc != 5) {
       die("Need to specify the NUMBER OF ROWS and DATA SIZE to create", conn);
     }
-    Database_create(conn);
     conn->db->num_rows = num_rows;
     conn->db->data_size = data_size;
+    Database_create(conn);
     Database_write(conn);
     break;
     
