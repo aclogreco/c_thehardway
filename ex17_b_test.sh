@@ -16,22 +16,22 @@ echo
 
 # set action test
 echo "Set action test."
-./ex17_b testdb.dat s 0 Anthony anthony@example.com
-./ex17_b testdb.dat s 1 Zed zed@example.com
-./ex17_b testdb.dat s 2 Frank frank@example.com
-./ex17_b testdb.dat s 3 Joe joe@example.com
-./ex17_b testdb.dat s 4 Ashley ashley@example.com
-./ex17_b testdb.dat s 5 Zora zora@example.com
-./ex17_b testdb.dat s 6 Fawn fawn@example.com
-./ex17_b testdb.dat s 7 Julie julie@example.com
-./ex17_b testdb.dat s 8 Melinda mindy@example.com
-./ex17_b testdb.dat s 9 Samantha sam@example.com
+./ex17_b testdb_b.dat s 0 Anthony anthony@example.com
+./ex17_b testdb_b.dat s 1 Zed zed@example.com
+./ex17_b testdb_b.dat s 2 Frank frank@example.com
+./ex17_b testdb_b.dat s 3 Joe joe@example.com
+./ex17_b testdb_b.dat s 4 Ashley ashley@example.com
+./ex17_b testdb_b.dat s 5 Zora zora@example.com
+./ex17_b testdb_b.dat s 6 Fawn fawn@example.com
+./ex17_b testdb_b.dat s 7 Julie julie@example.com
+./ex17_b testdb_b.dat s 8 Melinda mindy@example.com
+./ex17_b testdb_b.dat s 9 Samantha sam@example.com
 echo "Set action test complete."
 echo
 
 # list action test
 echo "List action test."
-./ex17_b testdb.dat l
+./ex17_b testdb_b.dat l
 echo "List action test complete."
 echo
 
@@ -40,7 +40,7 @@ echo
 echo "Get action test."
 ID=0
 while [ $ID -lt 10 ]; do
-    ./ex17_b testdb.dat g $ID
+    ./ex17_b testdb_b.dat g $ID
     let ID=ID+2
 done
 echo "Get action test complete."
@@ -48,13 +48,13 @@ echo
 
 # delete action test
 echo "Delete action test."
-./ex17_b testdb.dat d 3
+./ex17_b testdb_b.dat d 3
 echo "Delete action test complete."
 echo
 
 # list after delete
 echo "Final list."
-./ex17_b testdb.dat l
+./ex17_b testdb_b.dat l
 echo
 
 echo "Testing complete." | fembot3
