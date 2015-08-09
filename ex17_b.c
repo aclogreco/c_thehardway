@@ -142,7 +142,7 @@ void Database_write(struct Connection *conn) {
 
 
 /* This function creates and initializes an empty database.  */
-void Database_create(struct Connection *conn, int rows, int data_size) {
+void Database_create(struct Connection *conn, int num_rows, int data_size) {
   /* Set the nuber of records in the database and the size of the string 
      components of the records.  */
   conn->db->num_rows = num_rows;
