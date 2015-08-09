@@ -19,7 +19,8 @@ struct Address {
 struct Database {
   int num_rows;
   int data_size;
-  struct Address rows[MAX_ROWS];
+  /*struct Address rows[MAX_ROWS];*/
+  struct Address *rows;
 };
 
 struct Connection {
@@ -59,8 +60,33 @@ void Address_print(struct Address *addr) {
 /* This function loads the database by reading it from the file specified in 
    the Connection structure.  */
 void Database_load(struct Connection *conn) {
+  /*
   int rc = fread(conn->db, sizeof(struct Database), 1, conn->file);
   if (rc != 1) {
+    die("Failed to load database.", conn);
+  }
+  */
+  /* Read the database, piece by piece, from the file specified by 
+     conn->file.  */
+  int rc = fread(&(conn->db->num_rows), sizeof(conn->db->num_rows), 1, 
+		  conn->file);
+  if (rc != 1) {
+    die("Failed to load database.", conn);
+  }
+  
+  rc = fread(&(conn->db->data_size), sizeof(conn->db->data_size), 1, 
+	      conn->file);
+  if (rc != 1) {
+    die("Failed to load database.", conn);
+  }
+  
+  conn->db->rows = calloc(conn->db->num_rows, sizeof(struct Address));
+  if (!conn->db->rows) {
+    die("Memory error.", conn);
+  }
+  rc = fread(conn->db->rows, sizeof(struct Address), conn->db->num_rows, 
+	      conn->file);
+  if (rc != conn->db->num_rows) {
     die("Failed to load database.", conn);
   }
 }
@@ -114,6 +140,7 @@ void Database_close(struct Connection *conn) {
       fclose(conn->file);
     }
     if (conn->db) {
+      free(conn->db->rows);
       free(conn->db);
     }
     free(conn);
@@ -127,9 +154,29 @@ void Database_write(struct Connection *conn) {
   rewind(conn->file);
   
   /* Write the db component of conn to the file compnonent of conn.  */
-  int rc = fwrite(conn->db, sizeof(struct Database), 1, conn->file);
+  /*int rc = fwrite(conn->db, sizeof(struct Database), 1, conn->file);
   if (rc != 1) {
     die("Failed to write database.", conn);
+  }*/
+  
+  /* Write the database, piece by piece, to the file specified by 
+     conn->file.  */
+  int rc = fwrite(&(conn->db->num_rows), sizeof(conn->db->num_rows), 1, 
+		  conn->file);
+  if (rc != 1) {
+    die("Failed to write NUM_ROWS component of database.", conn);
+  }
+  
+  rc = fwrite(&(conn->db->data_size), sizeof(conn->db->data_size), 1, 
+	      conn->file);
+  if (rc != 1) {
+    die("Failed to write DATA_SIZE component of database.", conn);
+  }
+  
+  rc = fwrite(conn->db->rows, sizeof(struct Address), conn->db->num_rows, 
+	      conn->file);
+  if (rc != conn->db->num_rows) {
+    die("Failed to write ROWS component of database.", conn);
   }
   
   /* Flush the stream buffer to make sure that the data is written to the 
@@ -147,6 +194,12 @@ void Database_create(struct Connection *conn, int num_rows, int data_size) {
      components of the records.  */
   conn->db->num_rows = num_rows;
   conn->db->data_size = data_size;
+  
+  /* Allocate memory to store array of struct Address records.  */
+  conn->db->rows = calloc(conn->db->num_rows, sizeof(struct Address));
+  if (!conn->db->rows) {
+    die("Memory error.", conn);
+  }
   
   int i = 0;
   for (i = 0; i < conn->db->num_rows; i++) {
