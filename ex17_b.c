@@ -12,8 +12,12 @@
 struct Address {
   int id;
   int set;
+  /*
   char name[MAX_DATA];
   char email[MAX_DATA];
+  */
+  char *name;
+  char *email;
 };
 
 struct Database {
@@ -84,10 +88,46 @@ void Database_load(struct Connection *conn) {
   if (!conn->db->rows) {
     die("Memory error.", conn);
   }
+  /*
   rc = fread(conn->db->rows, sizeof(struct Address), conn->db->num_rows, 
 	      conn->file);
   if (rc != conn->db->num_rows) {
     die("Failed to load database.", conn);
+  }
+  */
+  int i = 0;
+  for (i = 0; i < conn->db->num_rows; i++) {
+    struct Address addr;
+    
+    rc = fread(&(addr.id), sizeof(addr.id), 1, conn->file);
+    if (rc != 1) {
+      die("Failed to load database.", conn);
+    }
+    
+    rc = fread(&(addr.set), sizeof(addr.set), 1, conn->file);
+    if (rc != 1) {
+      die("Failed to load database.", conn);
+    }
+    
+    addr.name = calloc(conn->db->data_size, sizeof(char));
+    if (!addr.name) {
+      die("Memory error.", conn);
+    }
+    rc = fread(addr.name, sizeof(char), conn->db->data_size, conn->file);
+    if (rc != conn->db->data_size) {
+      die("Failed to load database.", conn);
+    }
+    
+    addr.email = calloc(conn->db->data_size, sizeof(char));
+    if (!addr.email) {
+      die("Memory error.", conn);
+    }
+    rc = fread(addr.email, sizeof(char), conn->db->data_size, conn->file);
+    if (rc != conn->db->data_size) {
+      die("Failed to load database.", conn);
+    }
+    
+    conn->db->rows[i] = addr;
   }
 }
 
@@ -140,6 +180,11 @@ void Database_close(struct Connection *conn) {
       fclose(conn->file);
     }
     if (conn->db) {
+      int i = 0;
+      for (i = 0; i < conn->db->num_rows; i++) {
+	free(conn->db->rows[i].name);
+	free(conn->db->rows[i].email);
+      }
       free(conn->db->rows);
       free(conn->db);
     }
@@ -173,10 +218,35 @@ void Database_write(struct Connection *conn) {
     die("Failed to write DATA_SIZE component of database.", conn);
   }
   
+  /*
   rc = fwrite(conn->db->rows, sizeof(struct Address), conn->db->num_rows, 
 	      conn->file);
   if (rc != conn->db->num_rows) {
     die("Failed to write ROWS component of database.", conn);
+  }
+  */
+  int i = 0;
+  for (i = 0; i < conn->db->num_rows; i++) {
+    struct Address *addr = &conn->db->rows[i];
+    rc = fwrite(&(addr->id), sizeof(addr->id), 1, conn->file);
+    if (rc != 1) {
+      die("Failed to write ID component of address record.", conn);
+    }
+    
+    rc = fwrite(&(addr->set), sizeof(addr->set), 1, conn->file);
+    if (rc != 1) {
+      die("Failed to write SET component of address record.", conn);
+    }
+    
+    rc = fwrite(addr->name, sizeof(char), conn->db->data_size, conn->file);
+    if (rc != conn->db->data_size) {
+      die("Failed to write NAME component of address record.", conn);
+    }
+    
+    rc = fwrite(addr->email, sizeof(char), conn->db->data_size, conn->file);
+    if (rc != conn->db->data_size) {
+      die("Failed to write EMAIL component of address record.", conn);
+    }
   }
   
   /* Flush the stream buffer to make sure that the data is written to the 
@@ -204,7 +274,16 @@ void Database_create(struct Connection *conn, int num_rows, int data_size) {
   int i = 0;
   for (i = 0; i < conn->db->num_rows; i++) {
     // make a prototype to initialize it
-    struct Address addr = {.id = i, .set = 0};
+    struct Address addr = 
+      {
+	.id = i, 
+	.set = 0, 
+	.name = calloc(conn->db->data_size, sizeof(char)),
+	.email = calloc(conn->db->data_size, sizeof(char))
+      };
+    if (!addr.name || !addr.email) {
+      die("Memory error.", conn);
+    }
     // then just assign it
     conn->db->rows[i] = addr;
   }
@@ -250,7 +329,12 @@ void Database_get(struct Connection *conn, int id) {
 
 /* This function deletes the record specified by id.  */
 void Database_delete(struct Connection *conn, int id) {
-  struct Address addr = {.id = id, .set = 0};
+  struct Address addr = {
+    .id = id, 
+    .set = 0,
+    .name = calloc(conn->db->data_size, sizeof(char)),
+    .email = calloc(conn->db->data_size, sizeof(char))
+  };
   conn->db->rows[id] = addr;
 }
 
